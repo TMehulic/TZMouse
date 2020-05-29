@@ -8,6 +8,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -29,16 +31,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     MqttAndroidClient mqttAndroidClient;
 
-    final String serverUri = "tcp://iot.eclipse.org:1883";
+    final String serverUri = "tcp://broker.hivemq.com:1883";
     String clientId = "ExampleAndroidClient";
     final String subscriptionTopic = "exampleAndroidTopic";
-    final String publishTopic = "exampleAndroidPublishTopic";
-    final String publishMessage = "Hello World!";
+    final String publishTopic = "tzmouse/test";
+    String publishMessage = "Molim te da radi";
 
 
     static class ViewHolder{
         TextView x;
         TextView y;
+        Button btn;
     }
 
     @Override
@@ -48,10 +51,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         holder.x=findViewById(R.id.x);
         holder.y=findViewById(R.id.y);
+        holder.btn=findViewById(R.id.button);
 
 
-        mSensorManager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        holder.btn.setOnClickListener(listener);
+
+
+
 
         clientId = clientId + System.currentTimeMillis();
 
@@ -64,11 +70,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                    addToHistory("Reconnected to : " + serverURI);
 //                    // Because Clean Session is true, we need to re-subscribe
                     subscribeToTopic();
+
                 } else {
 //                    addToHistory("Connected to: " + serverURI);
                     System.out.println("Connected to: " + serverURI);;
                 }
+
+                mSensorManager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+                mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
             }
+
+
 
             @Override
             public void connectionLost(Throwable cause) {
@@ -114,22 +127,46 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } catch (MqttException ex){
             ex.printStackTrace();
         }
+
+
     }
+
+    private  View.OnClickListener listener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            publishMessage();
+        }
+    };
 
     protected void onResume(){
         super.onResume();
-        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
+//        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
+//        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     protected void onPause(){
         super.onPause();
-        mSensorManager.unregisterListener(this);
+//        mSensorManager.unregisterListener(this);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float x=event.values[0];
-        float y=event.values[1];
+        float x1=event.values[0];
+        float y1=event.values[1];
+        String x=null;
+        String y=null;
+        if(Math.abs(x1)>0.02){
+            x=String.valueOf(x1);
+        }else{
+            x=String.valueOf(0);
+        }
+        if(Math.abs(y1)>0.02){
+            y=String.valueOf(y1);
+        }else{
+            y=String.valueOf(0);
+        }
+        publishMessage=x+","+y;
+        publishMessage();
 
         //TODO: OVDJE IDE PUBLISH MESSAGE DA SE PROSLIJEDE VRIJEDNOSTI OVE
 //        System.out.println("X--->"+x);
