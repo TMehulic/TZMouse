@@ -2,14 +2,19 @@ package com.example.tzmouse;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -27,6 +32,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
+
+    private static class ViewHolder{
+        Button leftClick;
+        Button rightClick;
+        Button confirmBtn;
+        EditText topicText;
+    }
+
+
+
     private ViewHolder holder=new ViewHolder();
 
     MqttAndroidClient mqttAndroidClient;
@@ -34,29 +49,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     final String serverUri = "tcp://broker.hivemq.com:1883";
     String clientId = "ExampleAndroidClient";
     final String subscriptionTopic = "exampleAndroidTopic";
-    final String publishTopic = "tzmouse/test";
+    String publishTopic = "tzmouse/PCName"; //MOVEMENT
+    String publishTopicLMBPress="tzmouse/LMBPress/PCName";//Lijevi click press   šalje 1 dok je pritisnuto, 0 kad je gg
+    String publishTopicRMBPress="tzmouse/RMBPress/PCName";//Desni click press    šalje 1 dok je pritisnuto, 0 kad je gg
+    String publishTopicLMBClick="tzmouse/LMBClick/PCName";//Lijevi click         šalje 1 po kliku samo
+    String publishTopicRMBClick="tzmouse/RMBClick/PCName";//Desni click          šalje 1 po kliku samo
     String publishMessage = "Molim te da radi";
+    String publishLMBClickMessage="1";
+    String publishRMBClickMessage="1";
+    String publishLMBPressMessage="";
+    String publishRMBPressMessage="";
+
+    private boolean LMBPressed=false;
+    private boolean RMBPressed=false;
 
 
-    static class ViewHolder{
-        TextView x;
-        TextView y;
-        Button btn;
-    }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        holder.x=findViewById(R.id.x);
-        holder.y=findViewById(R.id.y);
-        holder.btn=findViewById(R.id.button);
-
-
-        holder.btn.setOnClickListener(listener);
-
-
+        holder.leftClick=findViewById(R.id.leftClick);
+        holder.rightClick=findViewById(R.id.rightClick);
+        holder.confirmBtn=findViewById(R.id.confirmBtn);
+        holder.topicText=findViewById(R.id.topicText);
 
 
         clientId = clientId + System.currentTimeMillis();
@@ -67,21 +85,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void connectComplete(boolean reconnect, String serverURI) {
 
                 if (reconnect) {
-//                    addToHistory("Reconnected to : " + serverURI);
-//                    // Because Clean Session is true, we need to re-subscribe
                     subscribeToTopic();
-
                 } else {
-//                    addToHistory("Connected to: " + serverURI);
                     System.out.println("Connected to: " + serverURI);;
                 }
-
-                mSensorManager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-                mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-
             }
-
-
 
             @Override
             public void connectionLost(Throwable cause) {
@@ -105,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mqttConnectOptions.setCleanSession(false);
 
         try {
-            //addToHistory("Connecting to " + serverUri);
             mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
@@ -116,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
                     subscribeToTopic();
+                    sucess();
                 }
 
                 @Override
@@ -129,6 +137,127 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
 
+
+        holder.confirmBtn.setOnClickListener(confirmClickListener);
+        holder.leftClick.setOnClickListener(lmbClickListener);
+        holder.rightClick.setOnClickListener(rmbClickListener);
+        holder.leftClick.setOnTouchListener(lmbPressListener);
+        holder.rightClick.setOnTouchListener(rmbPressListener);
+
+
+
+    }
+
+    //Postavlja topic
+    private View.OnClickListener confirmClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            publishTopic="tzmouse/"+holder.topicText.getText().toString();
+            publishTopicLMBClick="tzmouse/LMBClick/"+holder.topicText.getText().toString();
+            publishTopicRMBClick="tzmouse/RMBClick/"+holder.topicText.getText().toString();
+            publishTopicLMBPress="tzmouse/LMBPress/"+holder.topicText.getText().toString();
+            publishTopicRMBPress="tzmouse/RMBPress/"+holder.topicText.getText().toString();
+            holder.topicText.setEnabled(false);
+            holder.topicText.setEnabled(true);
+        }
+    };
+
+    private View.OnClickListener lmbClickListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            publishLMBClick();
+        }
+    };
+
+    private View.OnClickListener rmbClickListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            publishRMBClick();
+        }
+    };
+
+    private View.OnTouchListener lmbPressListener=new View.OnTouchListener() {
+
+        private Handler handler;
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if(event.getAction()==MotionEvent.ACTION_DOWN){
+                if(handler!=null) return true;
+                publishLMBPressMessage="1";
+                LMBPressed=true;
+                v.setPressed(true);
+                handler=new Handler();
+                handler.postDelayed(mAction,500);
+                publishLMBClick();
+            }
+            if(event.getAction() == MotionEvent.ACTION_UP){
+                if (handler == null) return true;
+                publishLMBPressMessage="0";
+                LMBPressed=false;
+                v.setPressed(false);
+                handler.removeCallbacks(mAction);
+                handler = null;
+                publishLMBPress();
+            }
+            return false;
+        }
+
+        Runnable mAction= new Runnable() {
+            @Override
+            public void run() {
+                publishLMBPress();
+                handler.postDelayed(this,500);
+            }
+        };
+    };
+
+    private View.OnTouchListener rmbPressListener=new View.OnTouchListener() {
+        private Handler handler;
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if(event.getAction()==MotionEvent.ACTION_DOWN){
+                if(handler!=null) return true;
+                publishRMBPressMessage="1";
+                RMBPressed=true;
+                v.setPressed(true);
+                handler=new Handler();
+                handler.postDelayed(mAction,500);
+                publishRMBClick();
+            }
+            if(event.getAction() == MotionEvent.ACTION_UP){
+                if (handler == null) return true;
+                publishRMBPressMessage="0";
+                RMBPressed=false;
+                v.setPressed(false);
+                handler.removeCallbacks(mAction);
+                handler = null;
+                publishRMBPress();
+            }
+            return false;
+        }
+
+        Runnable mAction= new Runnable() {
+            @Override
+            public void run() {
+                publishRMBPress();
+                handler.postDelayed(this,500);
+            }
+        };
+    };
+
+
+
+
+    private void sucess() {
+        mSensorManager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private  View.OnClickListener listener=new View.OnClickListener() {
@@ -140,13 +269,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     protected void onResume(){
         super.onResume();
-//        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
-//        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     protected void onPause(){
         super.onPause();
-//        mSensorManager.unregisterListener(this);
     }
 
     @Override
@@ -166,17 +292,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             y=String.valueOf(0);
         }
         publishMessage=x+","+y;
+        //TODO: UNCOMMENT LATER
         publishMessage();
 
-        //TODO: OVDJE IDE PUBLISH MESSAGE DA SE PROSLIJEDE VRIJEDNOSTI OVE
-//        System.out.println("X--->"+x);
-//        System.out.println("Y--->"+y);
-//        if(Math.abs(x)>0.2){
-//            holder.x.setText(String.valueOf(x));
-//        }
-//        if(Math.abs(y)>0.2){
-//            holder.y.setText(String.valueOf(y));
-//        }
     }
 
     public void subscribeToTopic(){
@@ -184,12 +302,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mqttAndroidClient.subscribe(subscriptionTopic, 0, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-//                    addToHistory("Subscribed!");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-//                    addToHistory("Failed to subscribe");
                 }
             });
 
@@ -214,6 +330,66 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             MqttMessage message = new MqttMessage();
             message.setPayload(publishMessage.getBytes());
             mqttAndroidClient.publish(publishTopic, message);
+            System.out.println("Message published");
+            if(!mqttAndroidClient.isConnected()){
+                System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void publishLMBPress(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishLMBPressMessage.getBytes());
+            mqttAndroidClient.publish(publishTopicLMBPress, message);
+            System.out.println("Message published");
+            if(!mqttAndroidClient.isConnected()){
+                System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void publishRMBPress(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishRMBPressMessage.getBytes());
+            mqttAndroidClient.publish(publishTopicRMBPress, message);
+            System.out.println("Message published");
+            if(!mqttAndroidClient.isConnected()){
+                System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void publishLMBClick(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishLMBClickMessage.getBytes());
+            mqttAndroidClient.publish(publishTopicLMBClick, message);
+            System.out.println("Message published");
+            if(!mqttAndroidClient.isConnected()){
+                System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void publishRMBClick(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishRMBClickMessage.getBytes());
+            mqttAndroidClient.publish(publishTopicRMBClick, message);
             System.out.println("Message published");
             if(!mqttAndroidClient.isConnected()){
                 System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
