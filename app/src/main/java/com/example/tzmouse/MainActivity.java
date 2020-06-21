@@ -195,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(event.getAction()==MotionEvent.ACTION_DOWN){
                 if(handler!=null) return true;
                 publishLMBPressMessage="1";
-                LMBPressed=true;
                 v.setPressed(true);
                 handler=new Handler();
                 handler.postDelayed(mAction,500);
@@ -204,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(event.getAction() == MotionEvent.ACTION_UP){
                 if (handler == null) return true;
                 publishLMBPressMessage="0";
-                LMBPressed=false;
                 v.setPressed(false);
                 handler.removeCallbacks(mAction);
                 handler = null;
@@ -232,7 +230,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(event.getAction()==MotionEvent.ACTION_DOWN){
                 if(handler!=null) return true;
                 publishRMBPressMessage="1";
-                RMBPressed=true;
                 v.setPressed(true);
                 handler=new Handler();
                 handler.postDelayed(mAction,500);
@@ -241,7 +238,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(event.getAction() == MotionEvent.ACTION_UP){
                 if (handler == null) return true;
                 publishRMBPressMessage="0";
-                RMBPressed=false;
                 v.setPressed(false);
                 handler.removeCallbacks(mAction);
                 handler = null;
