@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }else{
             y=String.valueOf(0);
         }
-        if(Double.parseDouble(x)>0.05 || Double.parseDouble(y)>0.05 ){
+        if(Math.abs(Double.parseDouble(x))>0.05 || Math.abs(Double.parseDouble(y))>0.05 ){
             publishMessage=x+","+y;
             //TODO: UNCOMMENT LATER
             publishMessage();
