@@ -105,4 +105,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/leftClick" />
 
+    <RelativeLayout
+        android:layout_width="55dp"
+        android:layout_height="200dp"
+        android:layout_marginLeft="169dp"
+        android:layout_marginTop="40dp"
+        android:translationZ="90dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/scrollUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/scroll_up_selector"
+            android:height="80dp" />
+
+        <Button
+            android:id="@+id/scrollDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="110dp"
+            android:background="@drawable/scroll_down_selector"
+            android:height="80dp" />
+    </RelativeLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

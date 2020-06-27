@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button leftClick;
         Button rightClick;
         Button confirmBtn;
+        Button scrollUp;
+        Button scrollDown;
         EditText topicText;
     }
 
@@ -56,11 +58,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     String publishTopicRMBPress="tzmouse/RMBPress/PCName";//Desni click press    šalje 1 dok je pritisnuto, 0 kad je gg
     String publishTopicLMBClick="tzmouse/LMBClick/PCName";//Lijevi click         šalje 1 po kliku samo
     String publishTopicRMBClick="tzmouse/RMBClick/PCName";//Desni click          šalje 1 po kliku samo
+    String publishTopicScrollUp="tzmouse/ScrollUp/PCName";//Scroll up            šalje 1 dok je pritisnuto, 0 kad je gg
+    String publishTopicScrollDown="tzmouse/ScrollDown/PCName";//Scroll down      šalje 1 dok je pritisnuto, 0 kad je gg
     String publishMessage = "Molim te da radi";
     String publishLMBClickMessage="1";
     String publishRMBClickMessage="1";
     String publishLMBPressMessage="";
     String publishRMBPressMessage="";
+    String publishScrollUpMessage="";
+    String publishScrollDownMessage="";
 
 
 
@@ -70,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         this.getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -78,11 +83,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         holder.leftClick=findViewById(R.id.leftClick);
         holder.rightClick=findViewById(R.id.rightClick);
         holder.confirmBtn=findViewById(R.id.confirmBtn);
         holder.topicText=findViewById(R.id.topicText);
+        holder.scrollUp=findViewById(R.id.scrollUp);
+        holder.scrollDown=findViewById(R.id.scrollDown);
 
 
         clientId = clientId + System.currentTimeMillis();
@@ -151,6 +159,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         holder.rightClick.setOnClickListener(rmbClickListener);
         holder.leftClick.setOnTouchListener(lmbPressListener);
         holder.rightClick.setOnTouchListener(rmbPressListener);
+        holder.scrollUp.setOnTouchListener(scrollUpListener);
+        holder.scrollDown.setOnTouchListener(scrollDownListener);
 
 
 
@@ -165,6 +175,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             publishTopicRMBClick="tzmouse/RMBClick/"+holder.topicText.getText().toString();
             publishTopicLMBPress="tzmouse/LMBPress/"+holder.topicText.getText().toString();
             publishTopicRMBPress="tzmouse/RMBPress/"+holder.topicText.getText().toString();
+            publishTopicScrollUp="tzmouse/ScrollUp/"+holder.topicText.getText().toString();
+            publishTopicScrollDown="tzmouse/ScrollDown/"+holder.topicText.getText().toString();
             holder.topicText.setEnabled(false);
             holder.topicText.setEnabled(true);
         }
@@ -254,6 +266,80 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         };
     };
+
+    private View.OnTouchListener scrollUpListener=new View.OnTouchListener() {
+
+        private Handler handler;
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if(event.getAction()==MotionEvent.ACTION_DOWN){
+                if(handler!=null) return true;
+                publishScrollUpMessage="1";
+                v.setPressed(true);
+                handler=new Handler();
+                handler.postDelayed(mAction,500);
+                //publishLMBClick();
+            }
+            if(event.getAction() == MotionEvent.ACTION_UP){
+                if (handler == null) return true;
+                publishScrollUpMessage="0";
+                v.setPressed(false);
+                handler.removeCallbacks(mAction);
+                handler = null;
+                publishScrollUp();
+            }
+            return false;
+        }
+
+        Runnable mAction= new Runnable() {
+            @Override
+            public void run() {
+                publishScrollUp();
+                handler.postDelayed(this,500);
+            }
+        };
+    };
+
+    private View.OnTouchListener scrollDownListener=new View.OnTouchListener() {
+
+        private Handler handler;
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if(event.getAction()==MotionEvent.ACTION_DOWN){
+                if(handler!=null) return true;
+                publishScrollDownMessage="1";
+                v.setPressed(true);
+                handler=new Handler();
+                handler.postDelayed(mAction,500);
+                //publishLMBClick();
+            }
+            if(event.getAction() == MotionEvent.ACTION_UP){
+                if (handler == null) return true;
+                publishScrollDownMessage="0";
+                v.setPressed(false);
+                handler.removeCallbacks(mAction);
+                handler = null;
+                publishScrollDown();
+            }
+            return false;
+        }
+
+        Runnable mAction= new Runnable() {
+            @Override
+            public void run() {
+                publishScrollDown();
+                handler.postDelayed(this,500);
+            }
+        };
+    };
+
+
 
 
 
@@ -398,6 +484,36 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             MqttMessage message = new MqttMessage();
             message.setPayload(publishRMBClickMessage.getBytes());
             mqttAndroidClient.publish(publishTopicRMBClick, message);
+            System.out.println("Message published");
+            if(!mqttAndroidClient.isConnected()){
+                System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void publishScrollUp(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishScrollUpMessage.getBytes());
+            mqttAndroidClient.publish(publishTopicScrollUp, message);
+            System.out.println("Message published");
+            if(!mqttAndroidClient.isConnected()){
+                System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+            }
+        } catch (MqttException e) {
+            System.err.println("Error Publishing: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void publishScrollDown(){
+        try {
+            MqttMessage message = new MqttMessage();
+            message.setPayload(publishScrollDownMessage.getBytes());
+            mqttAndroidClient.publish(publishTopicScrollDown, message);
             System.out.println("Message published");
             if(!mqttAndroidClient.isConnected()){
                 System.out.println(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
