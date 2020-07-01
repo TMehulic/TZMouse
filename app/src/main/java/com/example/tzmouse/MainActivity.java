@@ -2,9 +2,15 @@ package com.example.tzmouse;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,8 +20,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -41,9 +49,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button scrollUp;
         Button scrollDown;
         EditText topicText;
+        TextView logotext;
     }
-
-
 
 
     private ViewHolder holder=new ViewHolder();
@@ -84,6 +91,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         holder.topicText=findViewById(R.id.topicText);
         holder.scrollUp=findViewById(R.id.scrollUp);
         holder.scrollDown=findViewById(R.id.scrollDown);
+        holder.logotext=findViewById(R.id.logotext);
+
+
+        setAnimations();
+
+//        Matrix matrix = new Matrix();
+//        images.img1.setScaleType(ImageView.ScaleType.MATRIX); //required
+//        matrix.postRotate((float) 20, 5,    5);
+//        images.img1.setImageMatrix(matrix);
 
 
         clientId = clientId + System.currentTimeMillis();
@@ -157,6 +173,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
 
+    }
+
+    private void setAnimations() {
+        final ValueAnimator animator=ValueAnimator.ofFloat(0f,1f);
+        final int cyan=Color.CYAN;
+        animator.setDuration(3000);
+
+
+
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float mul = (Float) animation.getAnimatedValue();
+                int alpha = adjustAlpha(cyan, mul);
+                holder.logotext.setTextColor(alpha);
+            }
+        });
+
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.start();
+    }
+
+    public int adjustAlpha(int color, float factor) {
+        int alpha = Math.round(Color.alpha(color) * factor);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return Color.argb(alpha, red, green, blue);
     }
 
     //Postavlja topic
