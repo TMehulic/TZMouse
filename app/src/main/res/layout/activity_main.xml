@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient"
+    android:screenOrientation="portrait"
     tools:context=".MainActivity">
 
     <Button
@@ -37,11 +38,13 @@
         android:layout_height="42dp"
         android:layout_marginStart="43dp"
         android:layout_marginTop="38dp"
+        android:layout_marginEnd="14dp"
         android:background="@drawable/rounded_corner"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="PC Name"
         android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toStartOf="@+id/confirmBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button11" />
 
@@ -51,11 +54,13 @@
         android:layout_height="42dp"
         android:layout_marginStart="14dp"
         android:layout_marginTop="38dp"
+        android:layout_marginEnd="40dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTintMode="src_in"
         android:drawableLeft="@drawable/arrow_fit"
         android:drawablePadding="10dp"
         android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/topicText"
         app:layout_constraintTop_toBottomOf="@+id/button11" />
 
@@ -70,6 +75,7 @@
         android:background="@drawable/logo_left_click"
         app:layout_constraintBottom_toTopOf="@+id/button11"
         app:layout_constraintEnd_toStartOf="@+id/button9"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/leftClick" />
 
@@ -79,7 +85,7 @@
         android:layout_height="76dp"
         android:layout_marginStart="9dp"
         android:layout_marginTop="76dp"
-        android:layout_marginEnd="127dp"
+        android:layout_marginEnd="126dp"
         android:layout_marginBottom="7dp"
         android:background="@drawable/logo_right_click"
         app:layout_constraintBottom_toTopOf="@+id/button11"
@@ -108,10 +114,12 @@
     <RelativeLayout
         android:layout_width="55dp"
         android:layout_height="200dp"
-        android:layout_marginLeft="169dp"
+        android:layout_marginStart="9dp"
         android:layout_marginTop="40dp"
+        android:layout_marginEnd="9dp"
         android:translationZ="90dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rightClick"
+        app:layout_constraintStart_toEndOf="@+id/leftClick"
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
@@ -119,16 +127,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:background="@drawable/scroll_up_selector"
-            android:height="80dp" />
+            android:height="80dp"
+            android:background="@drawable/scroll_up_selector" />
 
         <Button
             android:id="@+id/scrollDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="110dp"
-            android:background="@drawable/scroll_down_selector"
-            android:height="80dp" />
+            android:height="80dp"
+            android:background="@drawable/scroll_down_selector" />
     </RelativeLayout>
 
 
