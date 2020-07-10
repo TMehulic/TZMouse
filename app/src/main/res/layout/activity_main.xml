@@ -1,158 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient"
-    android:screenOrientation="portrait"
-    tools:context=".MainActivity">
-
-    <Button
-        android:id="@+id/leftClick"
-        android:layout_width="160dp"
-        android:layout_height="280dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="31dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/left_click_selector"
-        app:layout_constraintEnd_toStartOf="@+id/rightClick"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/rightClick"
-        android:layout_width="160dp"
-        android:layout_height="280dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="31dp"
-        android:layout_marginEnd="25dp"
-        android:background="@drawable/right_click_selector"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/leftClick"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/topicText"
-        android:layout_width="250dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="43dp"
-        android:layout_marginTop="38dp"
-        android:layout_marginEnd="14dp"
-        android:background="@drawable/rounded_corner"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="PC Name"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintEnd_toStartOf="@+id/confirmBtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button11" />
-
-    <Button
-        android:id="@+id/confirmBtn"
-        android:layout_width="64dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="38dp"
-        android:layout_marginEnd="40dp"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTintMode="src_in"
-        android:drawableLeft="@drawable/arrow_fit"
-        android:drawablePadding="10dp"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/topicText"
-        app:layout_constraintTop_toBottomOf="@+id/button11" />
-
-    <Button
-        android:id="@+id/button8"
-        android:layout_width="82dp"
-        android:layout_height="90dp"
-        android:layout_marginStart="121dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="9dp"
-        android:layout_marginBottom="7dp"
-        android:background="@drawable/logo_left_click"
-        app:layout_constraintBottom_toTopOf="@+id/button11"
-        app:layout_constraintEnd_toStartOf="@+id/button9"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leftClick" />
-
-    <Button
-        android:id="@+id/button9"
-        android:layout_width="71dp"
-        android:layout_height="76dp"
-        android:layout_marginStart="9dp"
-        android:layout_marginTop="76dp"
-        android:layout_marginEnd="121dp"
-        android:layout_marginBottom="7dp"
-        android:background="@drawable/logo_right_click"
-        app:layout_constraintBottom_toTopOf="@+id/button11"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button8"
-        app:layout_constraintTop_toBottomOf="@+id/rightClick" />
-
-    <Button
-        android:id="@+id/button11"
-        android:layout_width="161dp"
-        android:layout_height="81dp"
-        android:layout_marginStart="123dp"
-        android:layout_marginTop="170dp"
-        android:layout_marginEnd="127dp"
-        android:background="@drawable/logo_bottom"
-        android:fontFamily="@font/almendra_sc"
-        android:gravity="center|center_horizontal|center_vertical"
-        android:text="T Z"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/colorAccent"
-        android:textSize="36sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/leftClick" />
-
-    <RelativeLayout
-        android:layout_width="55dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="9dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="9dp"
-        android:translationZ="90dp"
-        app:layout_constraintEnd_toStartOf="@+id/rightClick"
-        app:layout_constraintStart_toEndOf="@+id/leftClick"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
-            android:id="@+id/scrollUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:height="80dp"
-            android:background="@drawable/scroll_up_selector" />
-
-        <Button
-            android:id="@+id/scrollDown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="110dp"
-            android:height="80dp"
-            android:background="@drawable/scroll_down_selector" />
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/logotext"
-        android:layout_width="wrap_content"
+    android:fillViewport="true">
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="136dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="137dp"
-        android:fontFamily="@font/almendra_sc"
-        android:text="TZMouse"
-        android:textSize="36sp"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topicText" />
+        android:background="@drawable/gradient"
+        android:screenOrientation="portrait"
+        tools:context=".MainActivity">
+
+        <Button
+            android:id="@+id/leftClick"
+            android:layout_width="160dp"
+            android:layout_height="280dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="31dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/left_click_selector"
+            app:layout_constraintEnd_toStartOf="@+id/rightClick"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/rightClick"
+            android:layout_width="160dp"
+            android:layout_height="280dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="31dp"
+            android:layout_marginEnd="25dp"
+            android:background="@drawable/right_click_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/leftClick"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/topicText"
+            android:layout_width="250dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="43dp"
+            android:layout_marginTop="38dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/rounded_corner"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="PC Name"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintEnd_toStartOf="@+id/confirmBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button11" />
+
+        <Button
+            android:id="@+id/confirmBtn"
+            android:layout_width="64dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="38dp"
+            android:layout_marginEnd="40dp"
+            android:background="@drawable/rounded_corner"
+            android:backgroundTintMode="src_in"
+            android:drawableLeft="@drawable/arrow_fit"
+            android:drawablePadding="10dp"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/topicText"
+            app:layout_constraintTop_toBottomOf="@+id/button11" />
+
+        <Button
+            android:id="@+id/button8"
+            android:layout_width="82dp"
+            android:layout_height="90dp"
+            android:layout_marginStart="121dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="9dp"
+            android:layout_marginBottom="7dp"
+            android:background="@drawable/logo_left_click"
+            app:layout_constraintBottom_toTopOf="@+id/button11"
+            app:layout_constraintEnd_toStartOf="@+id/button9"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/leftClick" />
+
+        <Button
+            android:id="@+id/button9"
+            android:layout_width="71dp"
+            android:layout_height="76dp"
+            android:layout_marginStart="9dp"
+            android:layout_marginTop="76dp"
+            android:layout_marginEnd="121dp"
+            android:layout_marginBottom="7dp"
+            android:background="@drawable/logo_right_click"
+            app:layout_constraintBottom_toTopOf="@+id/button11"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button8"
+            app:layout_constraintTop_toBottomOf="@+id/rightClick" />
+
+        <Button
+            android:id="@+id/button11"
+            android:layout_width="161dp"
+            android:layout_height="81dp"
+            android:layout_marginStart="123dp"
+            android:layout_marginTop="170dp"
+            android:layout_marginEnd="127dp"
+            android:background="@drawable/logo_bottom"
+            android:fontFamily="@font/almendra_sc"
+            android:gravity="center|center_horizontal|center_vertical"
+            android:text="T Z"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/colorAccent"
+            android:textSize="36sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/leftClick" />
+
+        <RelativeLayout
+            android:layout_width="55dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="9dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="9dp"
+            android:translationZ="90dp"
+            app:layout_constraintEnd_toStartOf="@+id/rightClick"
+            app:layout_constraintStart_toEndOf="@+id/leftClick"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/scrollUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:height="80dp"
+                android:background="@drawable/scroll_up_selector" />
+
+            <Button
+                android:id="@+id/scrollDown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="110dp"
+                android:height="80dp"
+                android:background="@drawable/scroll_down_selector" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/logotext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="136dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="137dp"
+            android:fontFamily="@font/almendra_sc"
+            android:text="TZMouse"
+            android:textSize="36sp"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topicText" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
