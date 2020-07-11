@@ -1,11 +1,14 @@
 package com.example.tzmouse;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -48,9 +51,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button confirmBtn;
         Button scrollUp;
         Button scrollDown;
+        Button block;
         EditText topicText;
         TextView logotext;
+        ImageView info;
     }
+
+    private boolean blocked=false;
 
 
     private ViewHolder holder=new ViewHolder();
@@ -75,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     String publishScrollUpMessage="";
     String publishScrollDownMessage="";
 
+    AlertDialog.Builder dialogBuilder;
+
 
 
 
@@ -84,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        dialogBuilder=new AlertDialog.Builder(this);
 
         holder.leftClick=findViewById(R.id.leftClick);
         holder.rightClick=findViewById(R.id.rightClick);
@@ -92,6 +102,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         holder.scrollUp=findViewById(R.id.scrollUp);
         holder.scrollDown=findViewById(R.id.scrollDown);
         holder.logotext=findViewById(R.id.logotext);
+        holder.block=findViewById(R.id.block);
+        holder.info=findViewById(R.id.imageView);
+
+        holder.info.setColorFilter(Color.CYAN);
+
+        holder.info.setOnClickListener(infoListener);
 
 
         setAnimations();
@@ -170,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         holder.rightClick.setOnTouchListener(rmbPressListener);
         holder.scrollUp.setOnTouchListener(scrollUpListener);
         holder.scrollDown.setOnTouchListener(scrollDownListener);
-
+        holder.block.setOnTouchListener(blockListener);
 
 
     }
@@ -204,6 +220,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return Color.argb(alpha, red, green, blue);
     }
 
+    private View.OnClickListener infoListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            dialogBuilder.setMessage("'BLOCK' dugme služi za blokiranje slanja informacija o kretanju.\n" +
+                    "Korisno pri pomjeranju uređaja s jednog mjesta na drugo, a pri tome ne želimo da se kursor pomjeri.");
+            dialogBuilder.setCancelable(false);
+            dialogBuilder.setPositiveButton(
+                    "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            Dialog dialog = dialogBuilder.create();
+            dialog.show();
+        }
+    };
+
     //Postavlja topic
     private View.OnClickListener confirmClickListener = new View.OnClickListener() {
         @Override
@@ -232,6 +266,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         public void onClick(View v) {
             publishRMBClick();
         }
+    };
+
+    private View.OnTouchListener blockListener=new View.OnTouchListener(){
+
+        private Handler handler;
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if(event.getAction()==MotionEvent.ACTION_DOWN){
+                if(handler!=null) return true;
+                blocked=true;
+                v.setPressed(true);
+                holder.block.setTextColor(Color.parseColor("#cc0000"));
+                handler=new Handler();
+                handler.postDelayed(mAction,500);
+            }
+            if(event.getAction() == MotionEvent.ACTION_UP){
+                if (handler == null) return true;
+                v.setPressed(false);
+                blocked=false;
+                handler.removeCallbacks(mAction);
+                blocked=false;
+                holder.block.setTextColor(Color.parseColor("#ff103a"));
+                handler = null;
+            }
+            return false;
+        }
+
+        Runnable mAction= new Runnable() {
+            @Override
+            public void run() {
+                blocked=true;
+                handler.postDelayed(this,500);
+            }
+        };
     };
 
     private View.OnTouchListener lmbPressListener=new View.OnTouchListener() {
@@ -419,9 +489,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }else{
             y=String.valueOf(0);
         }
-        if(Math.abs(Double.parseDouble(x))>0.05 || Math.abs(Double.parseDouble(y))>0.05 ){
+        if((Math.abs(Double.parseDouble(x))>0.05 || Math.abs(Double.parseDouble(y))>0.05) && !blocked){
             publishMessage=x+","+y;
-            //TODO: UNCOMMENT LATER
             publishMessage();
         }
 
