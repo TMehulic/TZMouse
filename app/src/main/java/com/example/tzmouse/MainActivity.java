@@ -60,6 +60,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean blocked=false;
 
 
+    //SPEED INFO
+    private long previousTimeStamp=System.currentTimeMillis();
+    private double velocityX=0;
+    private double velocityY=0;
+
+
+
+
+
     private ViewHolder holder=new ViewHolder();
 
     MqttAndroidClient mqttAndroidClient;
@@ -450,8 +459,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
 
-
-
     private void sucess() {
         mSensorManager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
@@ -489,12 +496,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }else{
             y=String.valueOf(0);
         }
+        long timestamp=System.currentTimeMillis();
+        double time = (timestamp-previousTimeStamp)/1000f;
+        previousTimeStamp=timestamp;
+
         if((Math.abs(Double.parseDouble(x))>0.05 || Math.abs(Double.parseDouble(y))>0.05) && !blocked){
-            publishMessage=x+","+y;
+
+            double distancex=(velocityX*time)+(0.5*(x1*(time*time)));
+            double distancey=(velocityY*time)+(0.5*(y1*(time*time)));
+
+            velocityX+=x1*time;
+            velocityY+=y1*time;
+
+            publishMessage=distancex+","+distancey;
+            System.out.println(publishMessage);
             publishMessage();
         }
-
-
 
     }
 
