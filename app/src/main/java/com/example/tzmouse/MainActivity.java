@@ -509,7 +509,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             velocityY+=y1*time;
 
             publishMessage=distancex+","+distancey;
-            System.out.println(publishMessage);
+//            System.out.println("UBRZANJEX: "+x1+"   UBRZANJEY: "+y1);
+//            System.out.println(publishMessage);
             publishMessage();
         }
 
