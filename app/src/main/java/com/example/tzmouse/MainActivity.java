@@ -64,6 +64,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private long previousTimeStamp=System.currentTimeMillis();
     private double velocityX=0;
     private double velocityY=0;
+    int brojac=0;
+    double proslo=0;
+    double proslaX=0;
+    int brojacPos=0;
+    int brojacNeg=0;
 
 
 
@@ -484,36 +489,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
         float x1=event.values[0];
         float y1=event.values[1];
-        String x=null;
-        String y=null;
-        if(Math.abs(x1)>0.05){
-            x=String.valueOf(x1);
-        }else{
-            x=String.valueOf(0);
-        }
-        if(Math.abs(y1)>0.05){
-            y=String.valueOf(y1);
-        }else{
-            y=String.valueOf(0);
-        }
+
         long timestamp=System.currentTimeMillis();
         double time = (timestamp-previousTimeStamp)/1000f;
-        previousTimeStamp=timestamp;
 
-        if((Math.abs(Double.parseDouble(x))>0.05 || Math.abs(Double.parseDouble(y))>0.05) && !blocked){
+        if((Math.abs(x1)>0.05 || Math.abs(y1)>0.05) && !blocked) {
 
-            double distancex=(velocityX*time)+(0.5*(x1*(time*time)));
-            double distancey=(velocityY*time)+(0.5*(y1*(time*time)));
+            previousTimeStamp=timestamp;
 
-            velocityX+=x1*time;
-            velocityY+=y1*time;
+            double distancex = (velocityX * time) + (0.5 * (x1 * (time * time)));
+            double distancey = (velocityY * time) + (0.5 * (y1 * (time * time)));
 
-            publishMessage=distancex+","+distancey;
-//            System.out.println("UBRZANJEX: "+x1+"   UBRZANJEY: "+y1);
-//            System.out.println(publishMessage);
+            velocityX += x1 * time;
+            velocityY += y1 * time;
+
+            publishMessage = distancex*(-1) + "," + distancey;
+
             publishMessage();
+        }else{
+            previousTimeStamp=System.currentTimeMillis();
         }
-
     }
 
     public void subscribeToTopic(){
