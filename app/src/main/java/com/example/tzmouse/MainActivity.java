@@ -62,13 +62,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //SPEED INFO
     private long previousTimeStamp=System.currentTimeMillis();
-    private double velocityX=0;
-    private double velocityY=0;
+
     int brojac=0;
-    double proslo=0;
-    double proslaX=0;
-    int brojacPos=0;
-    int brojacNeg=0;
+
+//    boolean prviPut=true;
+//    double prosla;
+//    private double velocityX=0;
+//    private double velocityY=0;
 
 
 
@@ -81,13 +81,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     final String serverUri = "tcp://broker.hivemq.com:1883";
     String clientId = "ExampleAndroidClient";
     final String subscriptionTopic = "exampleAndroidTopic";
-    String publishTopic = "tzmouse/PCName"; //MOVEMENT
-    String publishTopicLMBPress="tzmouse/LMBPress/PCName";//Lijevi click press   šalje 1 dok je pritisnuto, 0 kad je gg
-    String publishTopicRMBPress="tzmouse/RMBPress/PCName";//Desni click press    šalje 1 dok je pritisnuto, 0 kad je gg
-    String publishTopicLMBClick="tzmouse/LMBClick/PCName";//Lijevi click         šalje 1 po kliku samo
-    String publishTopicRMBClick="tzmouse/RMBClick/PCName";//Desni click          šalje 1 po kliku samo
-    String publishTopicScrollUp="tzmouse/ScrollUp/PCName";//Scroll up            šalje 1 dok je pritisnuto, 0 kad je gg
-    String publishTopicScrollDown="tzmouse/ScrollDown/PCName";//Scroll down      šalje 1 dok je pritisnuto, 0 kad je gg
+    String publishTopic = "tzmouse/PCName/Move"; //MOVEMENT
+    String publishTopicLMBPress="tzmouse/PCName/LMBPress";//Lijevi click press   šalje 1 dok je pritisnuto, 0 kad je gg
+    String publishTopicRMBPress="tzmouse/PCName/RMBPress";//Desni click press    šalje 1 dok je pritisnuto, 0 kad je gg
+    String publishTopicLMBClick="tzmouse/PCName/LMBClick";//Lijevi click         šalje 1 po kliku samo
+    String publishTopicRMBClick="tzmouse/PCName/RMBClick";//Desni click          šalje 1 po kliku samo
+    String publishTopicScrollUp="tzmouse/PCName/ScrollUp";//Scroll up            šalje 1 dok je pritisnuto, 0 kad je gg
+    String publishTopicScrollDown="tzmouse/PCName/ScrollDown";//Scroll down      šalje 1 dok je pritisnuto, 0 kad je gg
     String publishMessage = "Molim te da radi";
     String publishLMBClickMessage="1";
     String publishRMBClickMessage="1";
@@ -256,13 +256,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private View.OnClickListener confirmClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            publishTopic="tzmouse/"+holder.topicText.getText().toString();
-            publishTopicLMBClick="tzmouse/LMBClick/"+holder.topicText.getText().toString();
-            publishTopicRMBClick="tzmouse/RMBClick/"+holder.topicText.getText().toString();
-            publishTopicLMBPress="tzmouse/LMBPress/"+holder.topicText.getText().toString();
-            publishTopicRMBPress="tzmouse/RMBPress/"+holder.topicText.getText().toString();
-            publishTopicScrollUp="tzmouse/ScrollUp/"+holder.topicText.getText().toString();
-            publishTopicScrollDown="tzmouse/ScrollDown/"+holder.topicText.getText().toString();
+            publishTopic="tzmouse/"+holder.topicText.getText().toString()+"/Move";
+            publishTopicLMBClick="tzmouse/"+holder.topicText.getText().toString()+"/LMBClick";
+            publishTopicRMBClick="tzmouse/"+holder.topicText.getText().toString()+"/RMBClick";
+            publishTopicLMBPress="tzmouse/"+holder.topicText.getText().toString()+"/LMBPress";
+            publishTopicRMBPress="tzmouse/"+holder.topicText.getText().toString()+"/RMBPress";
+            publishTopicScrollUp="tzmouse/"+holder.topicText.getText().toString()+"/ScrollUp";
+            publishTopicScrollDown="tzmouse/"+holder.topicText.getText().toString()+"/ScrollDown";
             holder.topicText.setEnabled(false);
             holder.topicText.setEnabled(true);
         }
@@ -292,10 +292,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(event.getAction()==MotionEvent.ACTION_DOWN){
                 if(handler!=null) return true;
                 blocked=true;
+//                velocityX=0;
+//                velocityY=0;
                 v.setPressed(true);
                 holder.block.setTextColor(Color.parseColor("#cc0000"));
                 handler=new Handler();
-                handler.postDelayed(mAction,500);
+                handler.postDelayed(mAction,1000);
             }
             if(event.getAction() == MotionEvent.ACTION_UP){
                 if (handler == null) return true;
@@ -313,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 blocked=true;
-                handler.postDelayed(this,500);
+                handler.postDelayed(this,1000);
             }
         };
     };
@@ -331,8 +333,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 publishLMBPressMessage="1";
                 v.setPressed(true);
                 handler=new Handler();
-                handler.postDelayed(mAction,500);
-                publishLMBClick();
+                handler.postDelayed(mAction,1000);
+//                publishLMBClick();
             }
             if(event.getAction() == MotionEvent.ACTION_UP){
                 if (handler == null) return true;
@@ -349,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 publishLMBPress();
-                handler.postDelayed(this,500);
+                handler.postDelayed(this,1000);
             }
         };
     };
@@ -366,8 +368,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 publishRMBPressMessage="1";
                 v.setPressed(true);
                 handler=new Handler();
-                handler.postDelayed(mAction,500);
-                publishRMBClick();
+                handler.postDelayed(mAction,1000);
+//                publishRMBClick();
             }
             if(event.getAction() == MotionEvent.ACTION_UP){
                 if (handler == null) return true;
@@ -384,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 publishRMBPress();
-                handler.postDelayed(this,500);
+                handler.postDelayed(this,1000);
             }
         };
     };
@@ -402,8 +404,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 publishScrollUpMessage="1";
                 v.setPressed(true);
                 handler=new Handler();
-                handler.postDelayed(mAction,500);
-                //publishLMBClick();
+                handler.postDelayed(mAction,1000);
             }
             if(event.getAction() == MotionEvent.ACTION_UP){
                 if (handler == null) return true;
@@ -420,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 publishScrollUp();
-                handler.postDelayed(this,500);
+                handler.postDelayed(this,1000);
             }
         };
     };
@@ -438,8 +439,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 publishScrollDownMessage="1";
                 v.setPressed(true);
                 handler=new Handler();
-                handler.postDelayed(mAction,500);
-                //publishLMBClick();
+                handler.postDelayed(mAction,1000);
             }
             if(event.getAction() == MotionEvent.ACTION_UP){
                 if (handler == null) return true;
@@ -456,26 +456,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void run() {
                 publishScrollDown();
-                handler.postDelayed(this,500);
+                handler.postDelayed(this,1000);
             }
         };
     };
 
 
 
-
     private void sucess() {
         mSensorManager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    private  View.OnClickListener listener=new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            publishMessage();
-        }
-    };
+
 
     protected void onResume(){
         super.onResume();
@@ -487,28 +481,90 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+
+        //OVDJE NE MOŽEMO SKONTATI MOVEMENTE...
+
         float x1=event.values[0];
         float y1=event.values[1];
 
         long timestamp=System.currentTimeMillis();
         double time = (timestamp-previousTimeStamp)/1000f;
 
-        if((Math.abs(x1)>0.05 || Math.abs(y1)>0.05) && !blocked) {
-
-            previousTimeStamp=timestamp;
-
-            double distancex = (velocityX * time) + (0.5 * (x1 * (time * time)));
-            double distancey = (velocityY * time) + (0.5 * (y1 * (time * time)));
-
-            velocityX += x1 * time;
-            velocityY += y1 * time;
-
-            publishMessage = distancex*(-1) + "," + distancey;
-
-            publishMessage();
-        }else{
-            previousTimeStamp=System.currentTimeMillis();
+        if((Math.abs(x1)>2 || Math.abs(y1)>2) && !blocked) {
+            if(Math.abs(x1)<2){
+                x1=0;
+            }
+            if(Math.abs(y1)<2){
+                y1=0;
+            }
+            if(brojac==0){
+                publishMessage=x1/2+","+y1/2;
+                System.out.println(publishMessage);
+                publishMessage();
+                brojac++;
+            }else if(brojac==3){
+                brojac=0;
+            }else{
+                brojac++;
+            }
         }
+
+//            if(prviPut){
+//                prosla=x1;
+//                prviPut=false;
+//            }else{
+//                if(prosla<0 && x1>0){
+//                    brojac++;
+//                }else if(prosla<0 && x1<0){
+//                    prosla=x1;
+//                    brojac=0;
+//                }else if(prosla>0 && x1<0){
+//                    brojac++;
+//                }else if(prosla>0 && x1>0){
+//                    brojac=0;
+//                    prosla=x1;
+//                }
+//            }
+//
+//            if(brojac==3){
+//                System.out.println("SLEEP");
+//                if(prosla<0){
+//                    velocityX-=0.001;
+//                }else{
+//                    velocityX+=0.001;
+//                }
+////                velocityX=0;
+//                mSensorManager.unregisterListener(this);
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                brojac=0;
+//                prosla*=(-1);
+//                previousTimeStamp=System.currentTimeMillis();
+//                mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
+//            }else{
+//                previousTimeStamp=timestamp;
+//
+//                double distancex = (velocityX * time) + (0.5 * (x1 * (time * time)));
+//                double distancey = (velocityY * time) + (0.5 * (y1 * (time * time)));
+//
+//                velocityX += x1 * time;
+//                velocityY += y1 * time;
+////            velocityX+=Math.pow(Math.E,(-1)*Math.abs(velocityX))*x1*20;
+//
+//                publishMessage = distancex + "," + distancey;
+//                System.out.println("VELOCITY: "+velocityX);
+//                System.out.println(publishMessage);
+//
+//                publishMessage();
+//            }
+//        }else{
+//            velocityX=0;
+//            brojac=0;
+//            previousTimeStamp=System.currentTimeMillis();
+//        }
     }
 
     public void subscribeToTopic(){
@@ -523,7 +579,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             });
 
-            // THIS DOES NOT WORK!
             mqttAndroidClient.subscribe(subscriptionTopic, 0, new IMqttMessageListener() {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
